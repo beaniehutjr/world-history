@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards — World History Student Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1F3EF;
+    --paper-2:#E9ECE6;
+    --ink:#22303A;
+    --ink-soft:#4A5A64;
+    --atlas:#2D5D6E;
+    --route:#B0442D;
+    --khaki:#8C8468;
+    --line:#D3D8D0;
+    --card:#FBFCFA;
+    --good:#3E7A4E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans',system-ui,sans-serif;
+    line-height:1.55;
+    background-image:
+      linear-gradient(var(--paper-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-2) 1px, transparent 1px);
+    background-size:56px 56px;
+    min-height:100vh;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:0 16px 48px}
+
+  header{border-bottom:2px solid var(--ink);background:var(--paper)}
+  .mast{max-width:680px;margin:0 auto;padding:20px 16px 16px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  h1{font-family:'Marcellus',serif;font-weight:400;font-size:1.6rem;letter-spacing:.03em}
+  .back{font-size:.85rem;color:var(--atlas);text-decoration:none;font-weight:600;letter-spacing:.04em}
+  .back:hover{text-decoration:underline}
+
+  /* controls */
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:20px 0 12px}
+  .btn{
+    font:inherit;font-size:.85rem;font-weight:600;
+    padding:8px 14px;border-radius:8px;cursor:pointer;
+    border:1.5px solid var(--ink);background:var(--card);color:var(--ink);
+    transition:background .15s ease;
+  }
+  .btn:hover{background:var(--paper-2)}
+  .btn:focus-visible{outline:3px solid var(--atlas);outline-offset:2px}
+  .btn-missed{border-color:var(--route);color:var(--route)}
+
+  .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{
+    font:inherit;font-size:.75rem;font-weight:600;letter-spacing:.04em;
+    padding:5px 11px;border-radius:99px;cursor:pointer;
+    border:1.5px solid var(--line);background:transparent;color:var(--ink-soft);
+  }
+  .chip.on{border-color:var(--atlas);background:var(--atlas);color:#fff}
+  .chip:focus-visible{outline:3px solid var(--atlas);outline-offset:2px}
+
+  .progress{height:6px;background:var(--paper-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .progress > div{height:100%;background:var(--route);width:0%;transition:width .25s ease}
+  .stats{display:flex;justify-content:space-between;font-size:.85rem;color:var(--ink-soft);margin:8px 2px 18px}
+  .stats b{color:var(--ink)}
+  .stats .good{color:var(--good)}
+  .stats .miss{color:var(--route)}
+
+  /* card */
+  .scene{perspective:1200px;margin-bottom:16px}
+  .card3d{
+    position:relative;width:100%;min-height:300px;
+    transform-style:preserve-3d;transition:transform .45s ease;
+    cursor:pointer;
+  }
+  .card3d.flipped{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;
+    background:var(--card);border:1.5px solid var(--ink);border-radius:14px;
+    box-shadow:0 3px 0 rgba(34,48,58,.15);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:28px 26px;gap:14px;
+  }
+  .face.back{transform:rotateY(180deg);border-color:var(--atlas)}
+  .cat{
+    font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--route);font-weight:600;
+  }
+  .qtext{font-family:'Marcellus',serif;font-size:1.35rem;line-height:1.35}
+  .atext{font-size:1.05rem;color:var(--ink);max-width:46ch}
+  .hint{font-size:.8rem;color:var(--khaki);letter-spacing:.06em}
+  .card3d:focus-visible{outline:3px solid var(--atlas);outline-offset:4px;border-radius:14px}
+
+  .navrow{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .graderow{display:none;justify-content:center;gap:10px}
+  .graderow.show{display:flex}
+  .btn-good{border-color:var(--good);color:var(--good)}
+  .btn-good:hover{background:#E8F1EA}
+  .btn-bad{border-color:var(--route);color:var(--route)}
+  .btn-bad:hover{background:#F5E8E4}
+
+  /* done screen */
+  .done{
+    background:var(--card);border:1.5px solid var(--ink);border-radius:14px;
+    padding:34px 26px;text-align:center;
+  }
+  .done h2{font-family:'Marcellus',serif;font-weight:400;font-size:1.6rem;margin-bottom:6px}
+  .done .big{font-family:'Marcellus',serif;font-size:3rem;color:var(--atlas);margin:8px 0}
+  .done p{color:var(--ink-soft);margin-bottom:18px}
+  .done .row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+
+  .kbd-tip{font-size:.75rem;color:var(--khaki);text-align:center;margin-top:14px}
+  kbd{border:1px solid var(--line);border-radius:4px;padding:1px 5px;background:var(--card);font-family:inherit}
+
+  @media (prefers-reduced-motion: reduce){
+    .card3d{transition:none}
+    .progress > div{transition:none}
+  }
+  @media (max-width:480px){
+    .card3d{min-height:340px}
+    .qtext{font-size:1.2rem}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="mast">
+    <h1>Flashcards</h1>
+    <a class="back" href="index.html">← All study tools</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="controls">
+    <button class="btn" onclick="shuffleDeck()">Shuffle deck</button>
+    <button class="btn btn-missed" id="missedBtn" onclick="reviewMissed()" style="display:none">Review missed</button>
+    <button class="btn" onclick="resetAll()">Reset</button>
+  </div>
+
+  <div class="filters" id="filters" aria-label="Filter by unit"></div>
+
+  <div class="progress" aria-hidden="true"><div id="prog"></div></div>
+  <div class="stats">
+    <span>Card <b id="num">1</b> of <b id="tot">—</b></span>
+    <span><b class="good" id="got">0</b> correct</span>
+    <span><b class="miss" id="miss">0</b> to review</span>
+  </div>
+
+  <div class="scene" id="scene">
+    <div class="card3d" id="card" tabindex="0" role="button"
+         aria-label="Flashcard. Press Enter or Space to flip."
+         onclick="flip()" onkeydown="cardKey(event)">
+      <div class="face front">
+        <div class="cat" id="cat"></div>
+        <div class="qtext" id="q"></div>
+        <div class="hint" id="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="atext" id="a"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navrow" id="navrow">
+    <button class="btn" onclick="prev()">← Prev</button>
+    <button class="btn" onclick="next()">Next →</button>
+  </div>
+
+  <div class="graderow" id="graderow">
+    <button class="btn btn-good" onclick="grade(true)">✓ Got it</button>
+    <button class="btn btn-bad" onclick="grade(false)">✗ Still learning</button>
+  </div>
+
+  <div id="doneBox" style="display:none"></div>
+
+  <p class="kbd-tip">Keyboard: <kbd>Space</kbd> flip · <kbd>←</kbd>/<kbd>→</kbd> move · <kbd>1</kbd> got it · <kbd>2</kbd> still learning</p>
+</div>
+
+<script>
+/* ═══ DECK — to change content, edit the lines below or ask Claude for a new deck ═══ */
+const ALL = [
+  {cat:'Early Humans', q:'What change first allowed people to form settled communities?', a:'The development of agriculture — farming produced food surpluses, so people no longer had to move to find food.'},
+  {cat:'Early Humans', q:'What drove early nomadic peoples to migrate from place to place?', a:'Survival needs — following animal herds and searching for food and water.'},
+  {cat:'Early Humans', q:'What was the Neolithic Revolution?', a:'The shift from hunting and gathering to farming and settled communities, around 10,000 BCE.'},
+  {cat:'Early Humans', q:'Define "specialization of labor."', a:'People focusing on specific jobs (potter, soldier, priest) instead of everyone doing every task — made possible by food surpluses.'},
+  {cat:'Early Humans', q:'Name the characteristics of a civilization.', a:'Stable food supply, specialization of labor, government, religion, social classes, arts and architecture, and a system of writing.'},
+  {cat:'River Civilizations', q:'What was Hammurabi\u2019s Code?', a:'The first written law code (Babylon/Mesopotamia). It set fixed penalties for crimes — famously "an eye for an eye."'},
+  {cat:'River Civilizations', q:'What type of government did Egypt and Mesopotamia share?', a:'Theocracy — rule by religious authority (pharaohs seen as gods; Mesopotamian priest-kings).'},
+  {cat:'River Civilizations', q:'Why did early civilizations develop in river valleys?', a:'Rivers provided fresh water, fertile soil from flooding, transportation, and food — ideal conditions for farming.'},
+  {cat:'River Civilizations', q:'What writing system developed in Mesopotamia? In Egypt?', a:'Cuneiform (wedge-shaped marks on clay) in Mesopotamia; hieroglyphics in Egypt.'},
+  {cat:'River Civilizations', q:'What was the significance of the Phoenician alphabet?', a:'It simplified writing to about 22 symbols and spread through trade — the basis of later Greek and Latin alphabets.'},
+  {cat:'World Religions', q:'What is monotheism, and which early people practiced it?', a:'Belief in one god. The Hebrews (Judaism) were the first major monotheistic people.'},
+  {cat:'World Religions', q:'What are the Four Noble Truths and Eightfold Path part of?', a:'Buddhism — the teachings of Siddhartha Gautama on ending suffering through right living.'},
+  {cat:'World Religions', q:'What Hindu concepts explain rebirth and consequences of actions?', a:'Reincarnation (cycle of rebirth) and karma (past actions shape your destiny and future lives).'},
+  {cat:'World Religions', q:'What are the Five Pillars?', a:'The core duties of Islam: faith, prayer, charity, fasting during Ramadan, and pilgrimage to Mecca (hajj).'},
+  {cat:'Ancient Greece', q:'What form of government developed in Athens?', a:'Direct democracy — citizens voted directly on laws (though citizenship excluded women, foreigners, and slaves).'},
+  {cat:'Ancient Greece', q:'How did Sparta differ from Athens?', a:'Sparta was a militaristic oligarchy focused on discipline and the army; Athens emphasized democracy, trade, and the arts.'},
+  {cat:'Ancient Greece', q:'What was the Golden Age of Athens, and who led it?', a:'A period of peace and cultural achievement after the Persian Wars, led by Pericles — the Parthenon was built during this time.'},
+  {cat:'Ancient Greece', q:'What was the significance of Alexander the Great?', a:'He conquered Greece, Persia, Egypt, and beyond — spreading Greek culture and creating Hellenistic civilization (a blend of Greek and Eastern cultures).'},
+  {cat:'Ancient Rome', q:'What was the Roman Republic\u2019s major contribution to government?', a:'Representative democracy — citizens elected officials (senators, consuls) to make laws, plus written law in the Twelve Tables.'},
+  {cat:'Ancient Rome', q:'What was the Pax Romana?', a:'About 200 years of Roman peace and prosperity beginning with Augustus — trade, roads, law, and stability spread across the empire.'},
+  {cat:'Ancient Rome', q:'Give three causes of the fall of the Western Roman Empire.', a:'Political corruption and weak leadership, economic problems (inflation, heavy taxes), and invasions by Germanic tribes. (Also: an over-stretched military and the split of the empire.)'},
+  {cat:'Ancient Rome', q:'How did Christianity spread through the Roman Empire?', a:'Along Roman roads and trade routes; its message appealed to the poor, and Emperor Constantine\u2019s conversion made it accepted (later official) in the empire.'},
+  {cat:'Byzantine & Islam', q:'What was Justinian\u2019s Code?', a:'Byzantine Emperor Justinian\u2019s organized collection of Roman law — it preserved Roman legal ideas and influenced later European law.'},
+  {cat:'Byzantine & Islam', q:'How did the Byzantine Empire preserve classical culture?', a:'It kept Greek and Roman knowledge alive in its libraries, laws, and schools while Western Europe fragmented after Rome fell.'},
+  {cat:'Byzantine & Islam', q:'What caused the split between Roman Catholic and Eastern Orthodox churches?', a:'The Great Schism of 1054 — disputes over the pope\u2019s authority, use of icons, and language (Latin vs. Greek).'},
+  {cat:'Byzantine & Islam', q:'Why was Islamic civilization a center of learning?', a:'Muslim scholars preserved Greek and Roman texts and advanced math (algebra, Arabic numerals), medicine, and astronomy while trade spread ideas.'},
+  {cat:'Middle Ages', q:'What was feudalism?', a:'A social/political system where kings granted land (fiefs) to lords in exchange for loyalty and military service; serfs worked the land.'},
+  {cat:'Middle Ages', q:'What was the significance of the Magna Carta (1215)?', a:'English nobles forced King John to sign it — limiting the king\u2019s power and establishing that even rulers must follow the law.'},
+  {cat:'Middle Ages', q:'What were the Crusades, and what was one lasting effect?', a:'Christian military campaigns to take the Holy Land from Muslim control. Effects: increased trade with the East, new ideas in Europe, and lasting religious tension.'},
+  {cat:'Middle Ages', q:'How did the Black Death change Europe?', a:'It killed roughly one-third of Europe\u2019s population — labor shortages raised wages, weakened feudalism, and shook faith in the Church.'},
+];
+/* ═══ END DECK ═══ */
+
+let deck=[...ALL], idx=0, got=0, miss=0, missed=[], graded=new Set(), flipped=false, reviewMode=false;
+let activeCat='All';
+
+const $=id=>document.getElementById(id);
+
+function buildFilters(){
+  const cats=['All',...new Set(ALL.map(c=>c.cat))];
+  $('filters').innerHTML='';
+  cats.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='chip'+(c===activeCat?' on':'');
+    b.textContent=c;
+    b.onclick=()=>{activeCat=c; applyFilter();};
+    $('filters').appendChild(b);
+  });
+}
+
+function applyFilter(){
+  deck = activeCat==='All' ? [...ALL] : ALL.filter(c=>c.cat===activeCat);
+  startOver();
+  buildFilters();
+}
+
+function startOver(){
+  idx=0; got=0; miss=0; missed=[]; graded=new Set(); flipped=false; reviewMode=false;
+  $('missedBtn').style.display='none';
+  $('doneBox').style.display='none';
+  $('scene').style.display='block';
+  $('navrow').style.display='flex';
+  render();
+}
+
+function render(){
+  const c=deck[idx];
+  $('cat').textContent=c.cat;
+  $('q').textContent=c.q;
+  $('a').textContent=c.a;
+  $('hint').textContent='Tap to reveal answer';
+  $('num').textContent=idx+1;
+  $('tot').textContent=deck.length;
+  $('got').textContent=got;
+  $('miss').textContent=miss;
+  $('prog').style.width=Math.round((idx/deck.length)*100)+'%';
+  $('card').classList.remove('flipped');
+  flipped=false;
+  $('graderow').classList.remove('show');
+}
+
+function flip(){
+  flipped=!flipped;
+  $('card').classList.toggle('flipped',flipped);
+  if(flipped && !graded.has(deckKey())){
+    $('graderow').classList.add('show');
+  } else {
+    $('graderow').classList.remove('show');
+  }
+}
+
+function deckKey(){ return deck[idx].q; }
+
+function grade(correct){
+  graded.add(deckKey());
+  $('graderow').classList.remove('show');
+  if(correct){ got++; $('got').textContent=got; }
+  else {
+    miss++; missed.push(deck[idx]);
+    $('miss').textContent=miss;
+    $('missedBtn').style.display='inline-block';
+  }
+  setTimeout(next, 350);
+}
+
+function next(){
+  if(idx<deck.length-1){ idx++; render(); }
+  else showDone();
+}
+function prev(){
+  if(idx>0){ idx--; render(); }
+}
+
+function shuffleDeck(){
+  for(let i=deck.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [deck[i],deck[j]]=[deck[j],deck[i]];
+  }
+  idx=0; flipped=false; render();
+}
+
+function reviewMissed(){
+  deck=[...missed]; missed=[]; got=0; miss=0; graded=new Set(); reviewMode=true; idx=0;
+  $('missedBtn').style.display='none';
+  $('doneBox').style.display='none';
+  $('scene').style.display='block';
+  $('navrow').style.display='flex';
+  render();
+}
+
+function resetAll(){
+  activeCat='All';
+  deck=[...ALL];
+  startOver();
+  buildFilters();
+}
+
+function showDone(){
+  const total=got+miss;
+  const pct=total>0?Math.round((got/total)*100):0;
+  $('scene').style.display='none';
+  $('navrow').style.display='none';
+  $('graderow').classList.remove('show');
+  $('prog').style.width='100%';
+  const msg = pct>=80 ? 'Excellent work — you know this material!'
+            : pct>=60 ? 'Good progress. Run the missed cards once more.'
+            : 'Keep at it — re-drill the missed pile and it will stick.';
+  const box=$('doneBox');
+  box.style.display='block';
+  box.innerHTML=`
+    <div class="done">
+      <h2>${reviewMode?'Missed-card round complete':'Deck complete'}</h2>
+      <div class="big">${pct}%</div>
+      <p>${got} correct · ${miss} to review — ${msg}</p>
+      <div class="row">
+        ${miss>0?'<button class="btn btn-missed" onclick="reviewMissed()">Review missed cards</button>':''}
+        <button class="btn" onclick="resetAll()">Start over</button>
+      </div>
+    </div>`;
+}
+
+function cardKey(e){
+  if(e.key===' '||e.key==='Enter'){ e.preventDefault(); flip(); }
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter')) return;
+  if(e.key==='ArrowRight') next();
+  else if(e.key==='ArrowLeft') prev();
+  else if(e.key===' '){ e.preventDefault(); flip(); }
+  else if(e.key==='1' && flipped) grade(true);
+  else if(e.key==='2' && flipped) grade(false);
+});
+
+buildFilters();
+render();
+</script>
+</body>
+</html>

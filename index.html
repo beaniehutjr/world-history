@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World History — Student Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1F3EF;
+    --paper-2:#E9ECE6;
+    --ink:#22303A;
+    --ink-soft:#4A5A64;
+    --atlas:#2D5D6E;
+    --route:#B0442D;
+    --khaki:#8C8468;
+    --line:#D3D8D0;
+    --card:#FBFCFA;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans',system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    /* faint graticule (map grid) */
+    background-image:
+      linear-gradient(var(--paper-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--paper-2) 1px, transparent 1px);
+    background-size:56px 56px;
+  }
+  a{color:var(--atlas)}
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px}
+
+  /* ── Header ─────────────────────────── */
+  header{
+    border-bottom:2px solid var(--ink);
+    background:var(--paper);
+  }
+  .masthead{
+    padding:36px 0 26px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--khaki);
+    font-weight:600;
+  }
+  h1{
+    font-family:'Marcellus',serif;
+    font-weight:400;
+    font-size:clamp(2rem,6vw,3rem);
+    letter-spacing:.04em;
+    line-height:1.1;
+  }
+  .subtitle{color:var(--ink-soft);max-width:52ch}
+  .teacher-line{
+    font-size:13px;
+    color:var(--khaki);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin-top:4px;
+  }
+
+  /* ── Route section ──────────────────── */
+  .section-label{
+    margin:44px 0 8px;
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--route);
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .section-label::after{
+    content:"";
+    flex:1;
+    border-top:1px solid var(--line);
+  }
+  .section-intro{color:var(--ink-soft);margin-bottom:28px;max-width:56ch}
+
+  .route{
+    position:relative;
+    padding-left:34px;
+    padding-bottom:8px;
+  }
+  /* the dotted expedition line */
+  .route::before{
+    content:"";
+    position:absolute;
+    left:10px;
+    top:14px;
+    bottom:14px;
+    border-left:3px dotted var(--route);
+    opacity:.85;
+  }
+  .stop{
+    position:relative;
+    margin-bottom:22px;
+  }
+  /* station marker */
+  .stop::before{
+    content:"";
+    position:absolute;
+    left:-31px;
+    top:26px;
+    width:13px;height:13px;
+    border-radius:50%;
+    background:var(--paper);
+    border:3px solid var(--route);
+  }
+  .stop.soon::before{
+    border-color:var(--khaki);
+    border-style:dashed;
+  }
+
+  .tool-card{
+    display:block;
+    text-decoration:none;
+    color:inherit;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 22px;
+    box-shadow:0 1px 0 rgba(34,48,58,.05);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  a.tool-card:hover, a.tool-card:focus-visible{
+    transform:translateY(-2px);
+    box-shadow:0 6px 18px rgba(34,48,58,.10);
+    border-color:var(--atlas);
+  }
+  a.tool-card:focus-visible{outline:3px solid var(--atlas);outline-offset:2px}
+  .tool-kicker{
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--atlas);
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  .tool-name{
+    font-family:'Marcellus',serif;
+    font-size:1.45rem;
+    letter-spacing:.02em;
+    margin-bottom:6px;
+  }
+  .tool-desc{color:var(--ink-soft);font-size:.95rem}
+  .tool-go{
+    display:inline-block;
+    margin-top:12px;
+    font-weight:600;
+    font-size:.9rem;
+    color:var(--route);
+  }
+  .soon .tool-card{
+    background:transparent;
+    border-style:dashed;
+    box-shadow:none;
+  }
+  .soon .tool-name{color:var(--ink-soft)}
+  .soon .tool-kicker{color:var(--khaki)}
+
+  /* ── Info strip ─────────────────────── */
+  .info{
+    margin-top:48px;
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:10px;
+    padding:22px 24px;
+  }
+  .info b{color:#fff}
+  .info a{color:#BFD8E0}
+  .info p{font-size:.95rem}
+
+  footer{
+    margin:40px 0 32px;
+    color:var(--khaki);
+    font-size:12.5px;
+    letter-spacing:.06em;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .tool-card{transition:none}
+  }
+  @media (max-width:520px){
+    .route{padding-left:28px}
+    .stop::before{left:-26px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap masthead">
+    <div class="eyebrow">Student Hub · 2026–2027</div>
+    <h1>World History</h1>
+    <p class="subtitle">Study tools, review games, and exam prep for our class — everything here works on your phone or Chromebook.</p>
+    <!-- EDIT ME: put your name below -->
+    <div class="teacher-line">Your Teacher's Name · Room ___</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="section-label">Study Tools</div>
+  <p class="section-intro">Each stop on the route is a different way to review. New tools are added throughout the year — check back before quizzes and the SOL.</p>
+
+  <div class="route">
+
+    <div class="stop">
+      <a class="tool-card" href="flashcards.html">
+        <div class="tool-kicker">Self-quiz · all units</div>
+        <div class="tool-name">Flashcards</div>
+        <div class="tool-desc">Flip-card review with shuffle, unit filters, and a "still learning" pile that lets you re-drill only what you missed.</div>
+        <span class="tool-go">Start reviewing →</span>
+      </a>
+    </div>
+
+    <!-- To add a new tool: copy a whole "stop" block like the one above,
+         change the href to your new file name, and edit the text. -->
+
+    <div class="stop soon">
+      <div class="tool-card">
+        <div class="tool-kicker">Coming soon</div>
+        <div class="tool-name">Practice Test</div>
+        <div class="tool-desc">Full SOL-style practice questions with instant scoring.</div>
+      </div>
+    </div>
+
+    <div class="stop soon">
+      <div class="tool-card">
+        <div class="tool-kicker">Coming soon</div>
+        <div class="tool-name">Timeline Challenge</div>
+        <div class="tool-desc">Put key events in order against the clock.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="info">
+    <p><b>Looking for assignments, announcements, or the schedule?</b> Those live on our main class site — this page is just for study tools. <!-- EDIT ME: paste your Google Site link below --> <a href="#">Back to the class site →</a></p>
+  </div>
+
+</main>
+
+<footer class="wrap">
+  <span>World History Student Hub</span>
+  <span>Built for our class · Free to use, always</span>
+</footer>
+
+</body>
+</html>
